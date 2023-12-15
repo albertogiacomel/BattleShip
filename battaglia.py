@@ -3,35 +3,69 @@ import pandas as pd
 import uuid
 from flask import Flask, render_template, request, redirect
 
-# Navi
-ships = [2, 3, 4, 4, 5]
+class Ship():
+    def __init__(self, num):
+        self.player = num
+        self.id = 0
+        self.cells = []
+        self.destroyedCells = 0
+        self.activeCells = 0
+        self.isDestroyed = False
+    def calc_hit(self,row,col):
+            for i in range(0,len(self.cells)):
+                if self.cells[i]["row"] == row and self.cells[i]["col"] == col:
+                    self.cells[i]["hit"] = True
+                    self.destroyedCells +=1
+            if self.destroyedCells == self.activeCells:
+                self.isDestroyed = True
+
+       
+class Fleet():
+    def __init__(self, num, ships):
+        self.player = num
+        self.ships = ships
+        self.activeShips = len(self.ships)
+        self.shipList = []
+
+    def checkVictory(self):
+        if self.activeShips == 0:
+            return True
+        return False
 
 # Crea i tabelloni di gioco
-board1 = [['..'] * 15 for i in range(15)]
-board1_shoots = [['..'] * 15 for i in range(15)]
-board2 = [['..'] * 15 for i in range(15)]
-fleet1 = []
-fleet2 = []
+boardSize = 15
+ships = [1,2]
+board1 = [['..'] * boardSize for i in range(boardSize)]
+board1_shoots = [['..'] * boardSize for i in range(boardSize)]
+board2 = [['..'] * boardSize for i in range(boardSize)]
+fleet1 = Fleet(0, ships)
+fleet2 = Fleet(1, ships)
 
-class Fleet(object):
-    def __init__(self):
-        self.player = '0'
-        self.ships = []
-        self.destroyed = 0
-        self.active = len(ships)
+def init():
+    for ship in fleet1.ships:
+        while True:
+            direction = random.choice(["horizontal", "vertical"])
+            row = random.randint(0, boardSize-1)
+            col = random.randint(0, boardSize-1)
+            # Check if the ship can be placed at the specified location
+            if can_place_ship(ship, board1, row, col, direction):          
+                place_ship(fleet1, ship, board1, row, col, direction, uuid.uuid4().int)
+                break
+        while True:
+            direction = random.choice(["horizontal", "vertical"])
+            row = random.randint(0, boardSize-1)
+            col = random.randint(0, boardSize-1)
+            # Check if the ship can be placed at the specified location
+            if can_place_ship(ship, board2, row, col, direction):
+                place_ship(fleet2, ship, board2, row, col, direction, uuid.uuid4().int)
+                break
 
-class Sheep(object):
-    def __init__(self):
-        self.player = '0'
-        self.coordinates = []
-        self.destroyed = 0
-        self.active = len(ships)
 
 def can_place_ship(ship, board, row, col, direction):
     row=int(row)
     col=int(col)
     
-    if (col+ship > len(board) or row+ship > len(board)):
+    if (col+ship > len(board) or row+ship > boardSize):
         return False   
 
     # Check if the specified location is within the board bounds
@@ -46,17 +80,22 @@ def can_place_ship(ship, board, row, col, direction):
                 return False   
     return True  # Ship can be placed
 
-def place_ship(player, ship, board, row, col, direction, id):
+def place_ship(fleet, ship, board, row, col, direction, id):
     if can_place_ship(ship, board, row, col, direction):
-          # Place the ship on the board
+        # Create Ship
+        tmpShip = Ship(fleet.player)
+        tmpShip.id= id
+        tmpShip.activeCells = ship
+        # Place the ship on the board
         if direction == "horizontal":
             for i in range(0 , ship):
                 board[row][col + i] = "S"+ str(i+1)
-                player.append((id, row, col+i))
+                tmpShip.cells.append({"row": row, "col": col+i, "hit":False})    
         else:
             for i in range(0 , ship):
                 board[row + i][col] = "S"+ str(i+1)
-                player.append((id, row+i, col))
+                tmpShip.cells.append({"row": row+i, "col": col, "hit":False})
+        fleet.shipList.append(tmpShip)       
         return True  # Ship placed successfully
     else:
         return False
@@ -65,36 +104,21 @@ def create_table(board):
     df = pd.DataFrame(board)
     return df
 
-
-for ship in ships:
-    while True:
-        direction = random.choice(["horizontal", "vertical"])
-        row = random.randint(0, len(board1)-1)
-        col = random.randint(0, len(board1)-1)
-        # Check if the ship can be placed at the specified location
-        if can_place_ship(ship, board1, row, col, direction):          
-            place_ship(player1, ship, board1, row, col, direction, uuid.uuid4().int)
-            break
-    while True:
-        direction = random.choice(["horizontal", "vertical"])
-        row = random.randint(0, len(board2)-1)
-        col = random.randint(0, len(board2)-1)
-        # Check if the ship can be placed at the specified location
-        if can_place_ship(ship, board2, row, col, direction):
-            place_ship(player2, ship, board2, row, col, direction, uuid.uuid4().int)
-            break
-
-def check_sink(row, col):
-    for i in range(0 , len(player2)):
-        for j in range(3):
-            if player2[i][j] == row and player2[i][j+1] == col: 
-                return True
-
+def checkSink(fleet, row, col):
+    for ship in fleet.shipList:
+        ship.calc_hit(row,col)
+        if ship.isDestroyed:
+            fleet.activeShips -= 1
+            fleet.shipList.remove(ship)
+    
 # Crea l'interfaccia grafica web
+init()
 app = Flask(__name__, template_folder="templates")
 
 @app.route("/")
 def index():
+    if fleet2.checkVictory():
+            return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2), winner="Player 1")
     return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2))
 
 @app.route("/place", methods=["GET", "POST"])
@@ -140,8 +164,8 @@ def fire():
          col = random.randint(0, len(board1)-1)
 
     if board2[row][col].startswith("S"):
-        board1_shoots[row ][col ] = "X"
-        winner = check_sink(row ,col )
+        board1_shoots[row][col] = "X"
+        checkSink(fleet2, row ,col )
     else:
         board1_shoots[row][col] = "O"
 

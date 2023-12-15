@@ -1,0 +1,47 @@
+
+/* Set the overall font family */
+body {
+  font-family: monospace;
+}
+
+/* Set the font size for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Set the font size for paragraphs */
+p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Set the font size for links */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Set the background color and border size for buttons */
+.btn {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Set the margin for buttons */
+.btn {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+elememt.style {
+  font-family: monospace;
+}

@@ -88,21 +88,27 @@
 
 {% if winner %}
 <h2>Congratulations, {{ winner }} has won!</h2>
+<div id="Restart"></div>
+  <form action="/restart" method="POST">
+  <button type="submit" name="Restart" style="height:100%;width:5%">Restart</button>
+</div>
 {% endif %}
 
+{% if not winner %}
 <div id="Fire_container">
   <h1>Fire Ship</h1>
   <form action="/fire" method="POST">
-    <label for="col">Column:&MediumSpace;</label>
-    <input type="number" id="col" name="col" min="0" max="14" value="0" required>
-    <br>
     <label for="row">Row:&ThickSpace;&ThickSpace;</label>
-    <input type="number" id="row" name="row" min="0" max="14" value="0" required>
+    <input type="number" id="row" name="row" min="0" max={{board2.columns.stop-1}} value="0" required>
     <br>
+    <label for="col">Column:&MediumSpace;</label>
+    <input type="number" id="col" name="col" min="0" max={{board2.columns.stop-1}} value="0" required>
+    <br><br>
     <button type="submit" name="Fire" style="height:100%;width:5%">Fire</button>
     <button type="submit" name="Random" style="height:100%;width:5%">Random</button>
 </div>
 <br>
-<a href="/place" hidden="true">Place Ships</a>
+<a href="/place" style="display: none">Place Ships</a>
+{% endif %}
 </body>
 </html>

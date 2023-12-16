@@ -12,8 +12,8 @@
     <form action="/place" method="POST">
         <label for="player">Board:</label>
         <select id="player" name="player">
-            <option value="1">Player 1</option>
-            <option value="2">Player 2</option>
+            <option value="0">Player 1</option>
+            <option value="1">Player 2</option>
         </select>
         <br>
 
@@ -26,11 +26,11 @@
         <br>
 
         <label for="row">Row:</label>
-        <input type="number" id="row" name="row" min="0" max="14" value="0" required>
+        <input type="number" id="row" name="row" min="0" max={{boardSize-1}} value="0" required>
         <br>
 
         <label for="col">Column:</label>
-        <input type="number" id="col" name="col" min="0" max="14" value="0" required>
+        <input type="number" id="col" name="col" min="0" max={{boardSize-1}} value="0" required>
         <br>
 
         <label for="direction">Direction:</label>

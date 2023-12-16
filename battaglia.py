@@ -3,6 +3,12 @@ import pandas as pd
 import uuid
 from flask import Flask, render_template, request, redirect
 
+# Crea i tabelloni di gioco
+boardSize = 15
+ships = [1,2,2,3,4,4,5]
+
+global board1, board2, board1_shoots, fleet1, fleet2
+
 class Ship():
     def __init__(self, num):
         self.player = num
@@ -31,18 +37,19 @@ class Fleet():
         if self.activeShips == 0:
             return True
         return False
-
-# Crea i tabelloni di gioco
-boardSize = 15
-ships = [1,2]
-board1 = [['..'] * boardSize for i in range(boardSize)]
-board1_shoots = [['..'] * boardSize for i in range(boardSize)]
-board2 = [['..'] * boardSize for i in range(boardSize)]
-fleet1 = Fleet(0, ships)
-fleet2 = Fleet(1, ships)
-
+    
+    def restart(self):
+        self.shipList.clear()
+        self.activeShips = len(self.ships)
+    
 def init():
-    for ship in fleet1.ships:
+    global board1, board2, board1_shoots, boardSize, ships, fleet1, fleet2
+    board1 = [['..'] * boardSize for i in range(boardSize)]
+    board1_shoots = [['..'] * boardSize for i in range(boardSize)]
+    board2 = [['..'] * boardSize for i in range(boardSize)]
+    fleet1 = Fleet(0, ships)
+    fleet2 = Fleet(1, ships)
+    for ship in ships:
         while True:
             direction = random.choice(["horizontal", "vertical"])
             row = random.randint(0, boardSize-1)
@@ -110,6 +117,8 @@ def checkSink(fleet, row, col):
         if ship.isDestroyed:
             fleet.activeShips -= 1
             fleet.shipList.remove(ship)
+            return True
+    return False
     
 # Crea l'interfaccia grafica web
 init()
@@ -126,7 +135,7 @@ def place():
     # Check the request method
     if request.method == "GET":
         # Render the place ship form
-        return render_template("place.html", ships=ships)
+        return render_template("place.html", ships=ships, boardSize=boardSize)
 
     # Retrieve request data
     player = request.form["player"]
@@ -135,17 +144,21 @@ def place():
     col = int(request.form["col"])
     direction = request.form["direction"]
 
-    if (player=="1"):
-        board = board1
+    if player == "0":
+        # Check if the ship can be placed
+        if not can_place_ship(ship, board1, row, col, direction):
+            return render_template("place.html", error="Invalid ship placement", ships=ships,  boardSize=boardSize)
+        else:
+             # Place the ship
+            place_ship(fleet1, ship, board1, row, col, direction, uuid.uuid4().int)
     else:
-        board = board2
-
-    # Check if the ship can be placed
-    if not can_place_ship(ship, board, row, col, direction):
-        return render_template("place.html", error="Invalid ship placement", ships=ships)
-
-    # Place the ship
-    place_ship(ship, board, row, col, direction)
+        # Check if the ship can be placed
+        if not can_place_ship(ship, board2, row, col, direction):
+            return render_template("place.html", error="Invalid ship placement", ships=ships,  boardSize=boardSize)
+        else:
+             # Place the ship
+            place_ship(fleet2, ship, board2, row, col, direction, uuid.uuid4().int)
+   
 
     # Aggiorna l'interfaccia grafica
     return redirect("/")
@@ -153,22 +166,29 @@ def place():
 
 @app.route("/fire", methods=["POST"])
 def fire():
-
     if "Fire" in request.form is not None:
         # Ottieni i dati della richiesta
         row = int(request.form["row"])
         col = int(request.form["col"])
   
     if "Random" in request.form is not None:
-         row = random.randint(0, len(board1)-1)
-         col = random.randint(0, len(board1)-1)
+         row = random.randint(0, boardSize-1)
+         col = random.randint(0, boardSize-1)
 
     if board2[row][col].startswith("S"):
-        board1_shoots[row][col] = "X"
-        checkSink(fleet2, row ,col )
+        if checkSink(fleet2, row ,col ):
+            board1_shoots[row][col] = "A"
+        else:
+            board1_shoots[row][col] = "X"   
     else:
         board1_shoots[row][col] = "O"
 
+    # Aggiorna l'interfaccia grafica
+    return redirect("/")
+
+@app.route("/restart", methods=["POST"])
+def restart():
+    init()
     # Aggiorna l'interfaccia grafica
     return redirect("/")
 

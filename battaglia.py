@@ -6,8 +6,7 @@ from flask import Flask, render_template, request, redirect
 # Crea i tabelloni di gioco
 boardSize = 15
 ships = [1,2,2,3,4,4,5]
-
-global board1, board2, board1_shoots, fleet1, fleet2
+global board1, board2, board1_shoots, fleet1, fleet2, hit1, hit2
 
 class Ship():
     def __init__(self, num):
@@ -43,12 +42,14 @@ class Fleet():
         self.activeShips = len(self.ships)
     
 def init():
-    global board1, board2, board1_shoots, boardSize, ships, fleet1, fleet2
+    global board1, board2, board1_shoots, boardSize, ships, fleet1, fleet2, hit1, hit2
     board1 = [['..'] * boardSize for i in range(boardSize)]
     board1_shoots = [['..'] * boardSize for i in range(boardSize)]
     board2 = [['..'] * boardSize for i in range(boardSize)]
     fleet1 = Fleet(0, ships)
     fleet2 = Fleet(1, ships)
+    hit1 = 0
+    hit2 = 0
     for ship in ships:
         while True:
             direction = random.choice(["horizontal", "vertical"])
@@ -128,7 +129,7 @@ app = Flask(__name__, template_folder="templates")
 def index():
     if fleet2.checkVictory():
             return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2), winner="Player 1")
-    return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2))
+    return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2), hit1=hit1)
 
 @app.route("/place", methods=["GET", "POST"])
 def place():
@@ -166,6 +167,8 @@ def place():
 
 @app.route("/fire", methods=["POST"])
 def fire():
+    global hit1
+    hit1 += 1
     if "Fire" in request.form is not None:
         # Ottieni i dati della richiesta
         row = int(request.form["row"])

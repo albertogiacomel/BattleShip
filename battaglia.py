@@ -1,54 +1,44 @@
 import random
+import pandas as pd
 import uuid
-<<<<<<< HEAD
 from flask import Flask, request, redirect, render_template
 
 # Crea i tabelloni di gioco
 boardSize = 10
 ships = [1,1,1,1,2,2,2,3,3,4]
 empty_cell = '.'
-=======
-import pandas as pd
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 
 class Ship():
-    def __init__(self, num, size):
+    def __init__(self, num):
         self.player = num
         self.id = 0
-        self.size = size
         self.cells = []
-        self.hit_cells = 0
-        self.is_destroyed = False
+        self.destroyedCells = 0
+        self.activeCells = 0
+        self.isDestroyed = False
+    def calc_hit(self,row,col):
+            for i in range(0,len(self.cells)):
+                if self.cells[i]["row"] == row and self.cells[i]["col"] == col:
+                    self.cells[i]["hit"] = True
+                    self.destroyedCells +=1
+            if self.destroyedCells == self.activeCells:
+                self.isDestroyed = True
 
-    def hit(self, row, col):
-        for cell in self.cells:
-            if cell["row"] == row and cell["col"] == col:
-                cell["hit"] = True
-                self.hit_cells += 1
-                if self.hit_cells == self.size:
-                    self.is_destroyed = True
-                return
-
-    def is_alive(self):
-        return not self.is_destroyed
-
-<<<<<<< HEAD
 
        
-=======
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 class Fleet():
     def __init__(self, num, ships):
         self.player = num
         self.ships = ships
-        self.active_ships = len(ships)
-        self.ship_list = []
+        self.activeShips = len(self.ships)
+        self.shipList = []
 
-    def check_victory(self):
-        return self.active_ships == 0
-
+    def checkVictory(self):
+        if self.activeShips == 0:
+            return True
+        return False
+    
     def restart(self):
-<<<<<<< HEAD
         self.shipList.clear()
         self.activeShips = len(self.ships)
 
@@ -128,103 +118,74 @@ def init():
             if can_place_ship(ship, board2, row, col, direction):
                 place_ship(fleet2, ship, board2, row, col, direction, uuid.uuid4().int)
                 break
-=======
-        self.ship_list.clear()
-        self.active_ships = len(self.ships)
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 
-def init_board(size):
-    return [['..'] * size for i in range(size)]
 
 def can_place_ship(ship, board, row, col, direction):
-    row = int(row)
-    col = int(col)
+    row=int(row)
+    col=int(col)
+    
+    if (col+ship > len(board) or row+ship > boardSize):
+        return False   
 
-    if (col + ship.size > len(board) or row + ship.size > len(board)):
-        return False
-
-    if (direction == "horizontal"):
-        for i in range(0, ship.size):
+    # Check if the specified location is within the board bounds
+    if ( direction == "horizontal"):
+         # Check for ship overlap in the row
+        for i in range(0 , ship):
             if board[row][col + i].startswith("S"):
                 return False
-    if (direction == "vertical"):
-        for i in range(0, ship.size):
+    if ( direction == "vertical"):
+        for i in range(0 , ship):
             if board[row + i][col].startswith("S"):
-                return False
-    return True
+                return False   
+    return True  # Ship can be placed
 
 def place_ship(fleet, ship, board, row, col, direction, id):
     if can_place_ship(ship, board, row, col, direction):
-        tmp_ship = Ship(fleet.player, ship.size)
-        tmp_ship.id = id
-        tmp_ship.active_cells = ship.size
-
+        # Create Ship
+        tmpShip = Ship(fleet.player)
+        tmpShip.id= id
+        tmpShip.activeCells = ship
+        # Place the ship on the board
         if direction == "horizontal":
-            for i in range(0, ship.size):
-                board[row][col + i] = "S" + str(i + 1)
-                tmp_ship.cells.append({"row": row, "col": col + i, "hit": False})
+            for i in range(0 , ship):
+                board[row][col + i] = "S"+ str(i+1)
+                tmpShip.cells.append({"row": row, "col": col+i, "hit":False})    
         else:
-            for i in range(0, ship.size):
-                board[row + i][col] = "S" + str(i + 1)
-                tmp_ship.cells.append({"row": row + i, "col": col, "hit": False})
-
-        fleet.ship_list.append(tmp_ship)
-        return True
+            for i in range(0 , ship):
+                board[row + i][col] = "S"+ str(i+1)
+                tmpShip.cells.append({"row": row+i, "col": col, "hit":False})
+        fleet.shipList.append(tmpShip)       
+        return True  # Ship placed successfully
     else:
         return False
 
 def create_table(board):
     return pd.DataFrame(board)
 
-def check_sink(fleet, row, col):
-    for ship in fleet.ship_list:
-        ship.hit(row, col)
-        if ship.is_destroyed:
-            fleet.active_ships -= 1
-            fleet.ship_list.remove(ship)
+def checkSink(fleet, row, col):
+    for ship in fleet.shipList:
+        ship.calc_hit(row,col)
+        if ship.isDestroyed:
+            fleet.activeShips -= 1
+            fleet.shipList.remove(ship)
             return True
     return False
 
-<<<<<<< HEAD
 def handle_move(row, col, opponent_board, board_shoots, fleet):
     if opponent_board[row][col].startswith("S"):
         if checkSink(fleet, row, col):
-=======
-def handle_fire(fleet, board, board_shoots, row, col):
-    if board[row][col].startswith("S"):
-        if check_sink(fleet, row, col):
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
             board_shoots[row][col] = "A"
         else:
             board_shoots[row][col] = "X"
     else:
         board_shoots[row][col] = "O"
-<<<<<<< HEAD
     
 # Crea l'interfaccia grafica web
 init()
-=======
-
-
-from flask import Flask, render_template, request, redirect, session
-from game_logic import *
-
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 app = Flask(__name__, template_folder="templates")
-
-# Initialize game state
-board_size = 15
-ships = [1, 2, 2, 3, 4, 4, 5]
-fleet1 = Fleet(0, ships)
-fleet2 = Fleet(1, ships)
-board1 = init_board(board_size)
-board2 = init_board(board_size)
-board1_shoots = init_board(board_size)
-board2_shoots = init_board(board_size)
 
 @app.route("/")
 def index():
-<<<<<<< HEAD
     if fleet2.checkVictory():
         return render_template("index.html", board1=create_table(board1), board1_shoots=create_table(board1_shoots), board2=create_table(board2), winner="Player 1", fleet1=fleet1, fleet2=fleet2)
     if fleet1.checkVictory():
@@ -261,32 +222,21 @@ def num_to_ascii(num):
     """
     # Check if the input is within the valid ASCII range
     return chr(num + 65)
-=======
-    if fleet2.check_victory():
-        return render_template("index.html", board1=create_table(board1),
-                               board1_shoots=create_table(board1_shoots),
-                               board2=create_table(board2),
-                               winner="Player 1")
-    return render_template("index.html", board1=create_table(board1),
-                               board1_shoots=create_table(board1_shoots),
-                               board2=create_table(board2),
-                               hit1=session.get("hit1", 0))
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 
 @app.route("/place", methods=["GET", "POST"])
 def place():
+    # Check the request method
     if request.method == "GET":
-        if "player" not in session:
-            session["player"] = 0
-        return render_template("place.html", ships=ships, boardSize=board_size)
+        # Render the place ship form
+        return render_template("place.html", ships=ships, boardSize=boardSize)
 
-    player = session["player"]
+    # Retrieve request data
+    player = request.form["player"]
     ship = int(request.form["ship"])
     row = int(request.form["row"])
     col = int(request.form["col"])
     direction = request.form["direction"]
 
-<<<<<<< HEAD
     if player == "0":
         # Check if the ship can be placed
         if not can_place_ship(ship, board1, row, col, direction):
@@ -338,6 +288,3 @@ def restart():
 
 if __name__ == "__main__":
     app.run(debug=True)
-=======
-    if player
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39

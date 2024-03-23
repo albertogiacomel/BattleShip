@@ -20,6 +20,8 @@ p {
   margin-bottom: 20px;
 }
 
+
+
 /* Set the font size for links */
 a {
   color: #007bff;
@@ -36,12 +38,82 @@ a {
   cursor: pointer;
 }
 
-/* Set the margin for buttons */
-.btn {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
 elememt.style {
   font-family: monospace;
 }
+
+.options {
+     background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    position: fixed;
+    left: 60%;
+}
+
+.fleet-details {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    position: fixed;
+    left: 10%;
+}
+
+.fleet1-details, .fleet2-details {
+    margin-bottom: 20px;
+}
+
+
+.fleet-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fleet-details th, .fleet-details td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    background-color: #f2f2f2;
+}
+
+
+.game-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.game-boards {
+  flex-basis: fit-content;
+}
+
+.fleet-details {
+  flex-basis: fit-content;
+}
+
+.Fire_container, .game-boards{
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  flex-basis: fit-content;
+  height: fit-content;
+
+}
+
+.game-container{
+  height: fit-content;
+}
+
+td{
+  width: 18px; /* Set the desired width for the table cells */
+  height: 18px; /* Set the desired height for the table cells */
+  box-sizing: border-box; /* Include padding and border in the specified width and height */
+  text-align: center; /* Center the text within the cells */
+  vertical-align: middle; /* Vertically center the text within the cells */
+  background-color: #f2f2f2;
+}
+

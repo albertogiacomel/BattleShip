@@ -1,114 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battleship Game</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+  <meta charset="UTF-8">
+  <title>Battleship Game</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+
+    document.addEventListener('dragstart', function (event) {
+      event.preventDefault();
+    });
+
+
+    function onCellClick(element) {
+      var row_index = element.dataset.row;
+      var col_index = element.dataset.col;
+      if (col_index < 0) {
+        col_index = 0;
+      }
+      document.getElementById('row').value = row_index;
+      document.getElementById('col').value = col_index;
+      document.getElementById('fire').click();
+    }
+    
+    function onOptionClick(element) {
+      var optionMenu = document.getElementsByClassName('option_menu');
+      optionMenu[0].style.display = true
+    }
+  </script>
 </head>
-<body><h1>Battleship Game</h1>
 
+<body oncontextmenu="return false">
+  <h1>Battleship Game</h1>
 
-<div class="game-container">
-  <div class="Player1">
-    <h2>Player 1</h2>
-    <div id="data-container">
-      <table id="dataframe">
-        <thead>
-          <tr>
-            <th />
-            {% for header in board1.columns %}
-            <th>{{ header }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in board1.itertuples() %}
-          <tr>
-            {% for value in row %}
-            <td>{{ value }}</td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <div class="options">
+    <h4 onclick="onOptionClick(this)">Game Options</h4>
+    <div class="option_menu" style="display: none">
+      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div1" checked> Show Div 1 </label>
+      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div2" checked> Show Div 2 </label>
+      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div3" checked> Show Div 3 </label>
     </div>
   </div>
 
-  <div class="Player1-Shoots">
-    <h2>Player 1 Shoots</h2>
-    <div id="data-container_shoots">
-      <table id="dataframe_shoots">
-        <thead>
-          <tr>
-            <th />
-            {% for header in board1_shoots.columns %}
-            <th>{{ header }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in board1_shoots.itertuples() %}
-          <tr>
-            {% for value in row %}
-            <td>{{ value }}</td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+  <div class="game-container">
+    <div class="game-boards">
+      {% if winner %}
+      <h2>Congratulations, <br> {{ winner }} has won!</h2>
+      <form action="/restart" method="POST">
+        <button type="submit" name="Restart">Restart</button>
+      </form>
+      {% endif %}
+      {% if not winner %}
+      <div class="Player1">
+        <h2>Player 1</h2>
+        <div id="data-container">
+          <table class="dataframe">
+            <thead>
+              <tr>
+                <th></th>
+                {% for col_index in board1.columns %}
+                <th>{{ col_index}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row_index, row in board1.iterrows() %}
+              <tr>
+                <td>{{ (row_index)|num_to_ascii }}</td>
+                {% for value in row %}
+                <td> {{ render_cell_content(value)| safe }} </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="Player1-Shoots">
+        <h2>Player 1 Shoots</h2>
+        <div id="data-container_shoots">
+          <table id="dataframe_shoots">
+            <thead>
+              <tr>
+                <th></th>
+                {% for col_index in board1.columns %}
+                <th>{{ col_index}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row_index, row in board1_shoots.iterrows() %}
+              <tr>
+                <td>{{ (row_index)|num_to_ascii }}</td>
+                {% for value in row %}
+                <td data-row="{{row_index}}" data-col="{{loop.index -1 }}" onclick="onCellClick(this)">
+                  {{ render_cell_content(value) | safe }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="Player2" style="display: none">
+        <h2>Player 2</h2>
+        <div id="data-container2">
+          <table id="dataframe2">
+            <thead>
+              <tr>
+                <th />
+                {% for col_index in board2.columns %}
+                <th>{{ col_index}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row_index, row in board2.iterrows() %}
+              <tr>
+                <td>{{ (row_index)|num_to_ascii }}</td>
+                {% for value in row %}
+                <td>{{ value }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    <div class="Fire_container">
+      <h2> Insert fire coordonates:</h2>
+      <form action="/fire" method="POST">
+        <label for="row">Row:&ThickSpace;&ThickSpace;</label>
+        <input type="number" id="row" name="row" min="0" max={{ board2.columns.stop - 1 }} value="0" required>
+        <br>
+        <label for="col">Column:&MediumSpace;</label>
+        <input type="number" id="col" name="col" min="0" max={{ board2.columns.stop - 1 }} value="0" required>
+        <br><br>
+        <button type="submit" id="fire" name="Fire">Fire</button>
+        <button type="submit" name="Random">Random</button>
     </div>
-  </div>
-
-  <div class="Player2" style="display: none">
-    <h2>Player 2</h2>
-    <div id="data-container2">
-      <table id="dataframe2">
-        <thead>
-          <tr>
-            <th />
-            {% for header in board2.columns %}
-            <th>{{ header }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in board2.itertuples() %}
-          <tr>
-            {% for value in row %}
-            <td>{{ value }}</td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-{% if winner %}
-<h2>Congratulations, {{ winner }} has won!</h2>
-<div id="Restart"></div>
-  <form action="/restart" method="POST">
-  <button type="submit" name="Restart" style="height:100%;width:5%">Restart</button>
-</div>
-{% endif %}
-
-{% if not winner %}
-<div id="Fire_container">
-  <h2>Number of shoots: {{hit1}}</h2>
-  <form action="/fire" method="POST">
-    <label for="row">Row:&ThickSpace;&ThickSpace;</label>
-    <input type="number" id="row" name="row" min="0" max={{board2.columns.stop-1}} value="0" required>
     <br>
-    <label for="col">Column:&MediumSpace;</label>
-    <input type="number" id="col" name="col" min="0" max={{board2.columns.stop-1}} value="0" required>
-    <br><br>
-    <button type="submit" name="Fire" style="height:100%;width:5%">Fire</button>
-    <button type="submit" name="Random" style="height:100%;width:5%">Random</button>
-</div>
-<br>
-<a href="/place" style="display: none">Place Ships</a>
-{% endif %}
+    <a href="/place" style="display: none">Place Ships</a>
+  </div>
+  {% endif %}
+
+  <div class="fleet-details">
+    <div class="fleet1-details">
+      <h3>Fleet Player 1</h3>
+      <table>
+        <tr>
+          <th>Ship Length</th>
+          <th>Destroyed Cells</th>
+          <th>Is Destroyed</th>
+        </tr>
+        {% for ship in fleet1.shipList %}
+        <tr>
+          <td>{{ ship.activeCells }}</td>
+          <td>{{ ship.destroyedCells }}</td>
+          <td>{{ ship.isDestroyed }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="fleet2-details">
+      <h3>Fleet Player 2</h3>
+      <table>
+        <tr>
+          <th>Ship Length</th>
+          <th>Destroyed Cells</th>
+          <th>Is Destroyed</th>
+        </tr>
+        {% for ship in fleet2.shipList %}
+        <tr>
+          <td>{{ ship.activeCells }}</td>
+          <td>{{ ship.destroyedCells }}</td>
+          <td>{{ ship.isDestroyed }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  </div>
 </body>
+
 </html>

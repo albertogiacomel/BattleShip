@@ -9,16 +9,18 @@
 <body>
     <h1>Battleship Game - Fire Ship</h1>
 
-    <form action="/fire" method="POST">
-        <label for="row">Row:</label>
-        <input type="number" id="row" name="row" min="0" max="14" value="0" required>
-        <br>
+    <div class="fire-container">
+        <form action="/fire" method="POST">
+            <label for="row">Row:</label>
+            <input type="number" id="row" name="row" min="0" max="14" value="0" required>
+            <br>
 
-        <label for="col">Column:</label>
-        <input type="number" id="col" name="col" min="0" max="14" value="0" required>
-        <br>
+            <label for="col">Column:</label>
+            <input type="number" id="col" name="col" min="0" max="14" value="0" required>
+            <br>
 
-        <input type="submit" value="Fire">
-    </form>
+            <input type="submit" value="Fire" class="btn">
+        </form>
+    </div>
 </body>
 </html>

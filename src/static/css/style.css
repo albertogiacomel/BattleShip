@@ -115,3 +115,41 @@ td{
   background-color: #f2f2f2;
 }
 
+/* Merged styles from src/templates/style.css */
+body {
+  font-family: monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: none;
+}
+
+.element {
+  font-family: monospace;
+}

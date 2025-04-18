@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battaglia Navale - Difficoltà</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>Battaglia Navale - Seleziona Difficoltà</h1>
+    
+    <div class="difficulty-container">
+        <form action="/difficulty" method="POST">
+            <h2>Seleziona il livello di difficoltà:</h2>
+            
+            <div class="difficulty-option">
+                <input type="radio" id="easy" name="difficulty" value="easy">
+                <label for="easy">Facile</label>
+                <div class="description">
+                    L'avversario ha poca precisione nei colpi e non segue una strategia ben definita.
+                </div>
+            </div>
+            
+            <div class="difficulty-option">
+                <input type="radio" id="medium" name="difficulty" value="medium" checked>
+                <label for="medium">Medio</label>
+                <div class="description">
+                    L'avversario usa una strategia di base, cercando attorno ai colpi andati a segno.
+                </div>
+            </div>
+            
+            <div class="difficulty-option">
+                <input type="radio" id="hard" name="difficulty" value="hard">
+                <label for="hard">Difficile</label>
+                <div class="description">
+                    L'avversario usa una strategia avanzata, con memoria dei colpi e analisi probabilistica.
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Conferma</button>
+        </form>
+    </div>
+    
+    <div class="back-to-game">
+        <a href="/">Torna al gioco</a>
+    </div>
+</body>
+</html>

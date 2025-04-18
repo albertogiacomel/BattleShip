@@ -27,21 +27,32 @@
       var optionMenu = document.getElementsByClassName('option_menu');
       optionMenu[0].style.display = true
     }
+    
+    document.ready(function () {
+        ("#show-options-menu").click(function () {
+          $("#options-menu").show();
+        });
+
+        ("#hide-options-menu").click(function () {
+          ("#options-menu").hide();
+        });
+      });
   </script>
 </head>
 
 <body oncontextmenu="return false">
   <h1>Battleship Game</h1>
 
-  <div class="options">
-    <h4 onclick="onOptionClick(this)">Game Options</h4>
-    <div class="option_menu" style="display: none">
-      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div1" checked> Show Div 1 </label>
-      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div2" checked> Show Div 2 </label>
-      <label> <input type="checkbox" class="visibilityCheckbox" data-target="div3" checked> Show Div 3 </label>
-    </div>
+  <div class="options-menu" id="options-menu" style="display: none;">
+    <h2>Options</h2>
+    <button id="hide-options-menu">Hide Options</button>
+    <br><br>
+    <a href="/place" id="place-ships-button">Place Ships</a><br><br>
+    <a href="/rules" id="rules-button">Game Rules</a><br><br>
+    <a href="/about" id="about-button">About</a><br><br>
   </div>
-
+  
+ <div class="options"> <button id="show-options-menu">Options</button> </div> 
 
   <div class="game-container">
     <div class="game-boards">

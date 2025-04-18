@@ -19,13 +19,9 @@ p {
   margin-bottom: 20px;
 }
 
-<<<<<<< HEAD
 
 
 /* Set the font size for links */
-=======
-/* Style links */
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
 a {
   color: #007bff;
   text-decoration: none;
@@ -38,19 +34,9 @@ a {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-<<<<<<< HEAD
 }
 
 elememt.style {
-=======
-  margin-top: 20px;
-  margin-bottom: 20px;
-  border: none;
-}
-
-/* Style the elememt element */
-.element {
->>>>>>> 6997d9c3a02d4cb5f4669ce8c5c1881286b89b39
   font-family: monospace;
 }
 

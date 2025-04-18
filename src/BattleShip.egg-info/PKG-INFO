@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: BattleShip
+Version: 1.0.0
+Summary: A BattleShip game project
+Author: Alberto Giacomel
+Author-email: alberto.giacomel@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Provides-Extra: dev
+Requires-Dist: flask; extra == "dev"
+Requires-Dist: pandas; extra == "dev"
+Requires-Dist: uuid; extra == "dev"

@@ -51,13 +51,13 @@ class Fleet():
         return [ship.activeCells for ship in self.shipList]
 
 def init():
-    global board1, board2, board1_shoots, board2_shoots, boardSize, ships, fleet1, fleet2, hit1, hit2, ai_player
-    board1 = [[empty_cell] * boardSize for i in range(boardSize)]
-    board1_shoots = [[empty_cell] * boardSize for i in range(boardSize)]
-    board2 = [[empty_cell] * boardSize for i in range(boardSize)]
-    board2_shoots = [[empty_cell] * boardSize for i in range(boardSize)]
-    fleet1 = Fleet(0, ships)
-    fleet2 = Fleet(1, ships)
+    global player1_board, player2_board, player1_board_shoots, player2_board_shoots, boardSize, ships, player1_fleet, player2_fleet, hit1, hit2, ai_player
+    player1_board = [[empty_cell] * boardSize for i in range(boardSize)]
+    player1_board_shoots = [[empty_cell] * boardSize for i in range(boardSize)]
+    player2_board = [[empty_cell] * boardSize for i in range(boardSize)]
+    player2_board_shoots = [[empty_cell] * boardSize for i in range(boardSize)]
+    player1_fleet = Fleet(0, ships)
+    player2_fleet = Fleet(1, ships)
     hit1 = 0
     hit2 = 0
     
@@ -66,8 +66,8 @@ def init():
     ai_player.reset(ships)
 
     # Posiziona le navi casualmente
-    place_ships_randomly(fleet1, board1)
-    place_ships_randomly(fleet2, board2)
+    place_ships_randomly(player1_fleet, player1_board)
+    place_ships_randomly(player2_fleet, player2_board)
 
 def place_ships_randomly(fleet, board):
     """Posiziona le navi casualmente sulla plancia"""
@@ -137,7 +137,7 @@ def checkSink(fleet, row, col):
             sunk_ship = fleet.shipList.pop(i)
             # La aggiungiamo alla lista di navi affondate
             fleet.destroyedShips.append(sunk_ship)
-            return True, ship.activeCells
+        return True, ship.activeCells
     return False, 0
 
 def handle_move(row, col, opponent_board, board_shoots, fleet):
@@ -168,33 +168,33 @@ app = Flask(__name__, template_folder="templates")
 @app.route("/")
 def index():
     """Pagina principale del gioco"""
-    if fleet2.checkVictory():
+    if player2_fleet.checkVictory():
         return render_template("index.html", 
-                              board1=create_table(board1), 
-                              board1_shoots=create_table(board1_shoots), 
-                              board2=create_table(board2), 
+                              player1_board=create_table(player1_board), 
+                              player1_board_shoots=create_table(player1_board_shoots), 
+                              player2_board=create_table(player2_board), 
                               winner="Player 1", 
-                              fleet1=fleet1, 
-                              fleet2=fleet2,
+                              player1_fleet=player1_fleet, 
+                              player2_fleet=player2_fleet,
                               game_status="finished")
-    if fleet1.checkVictory():
+    if player1_fleet.checkVictory():
         return render_template("index.html", 
-                              board1=create_table(board1), 
-                              board1_shoots=create_table(board1_shoots), 
-                              board2=create_table(board2), 
+                              player1_board=create_table(player1_board), 
+                              player1_board_shoots=create_table(player1_board_shoots), 
+                              player2_board=create_table(player2_board), 
                               winner="Computer", 
-                              fleet1=fleet1, 
-                              fleet2=fleet2,
+                              player1_fleet=player1_fleet, 
+                              player2_fleet=player2_fleet,
                               game_status="finished")
     
     return render_template("index.html", 
-                          board1=create_table(board1), 
-                          board1_shoots=create_table(board1_shoots), 
-                          board2=create_table(board2), 
+                          player1_board=create_table(player1_board), 
+                          player1_board_shoots=create_table(player1_board_shoots), 
+                          player2_board=create_table(player2_board), 
                           hit1=hit1, 
                           hit2=hit2,
-                          fleet1=fleet1, 
-                          fleet2=fleet2,
+                          player1_fleet=player1_fleet, 
+                          player2_fleet=player2_fleet,
                           game_status="playing")
 
 @app.context_processor
@@ -229,15 +229,15 @@ def place():
     direction = request.form["direction"]
 
     if player == "0":
-        if not can_place_ship(ship, board1, row, col, direction):
+        if not can_place_ship(ship, player1_board, row, col, direction):
             return render_template("place.html", error="Invalid ship placement", ships=ships, boardSize=boardSize)
         else:
-            place_ship(fleet1, ship, board1, row, col, direction, uuid.uuid4().int)
+            place_ship(player1_fleet, ship, player1_board, row, col, direction, uuid.uuid4().int)
     else:
-        if not can_place_ship(ship, board2, row, col, direction):
+        if not can_place_ship(ship, player2_board, row, col, direction):
             return render_template("place.html", error="Invalid ship placement", ships=ships, boardSize=boardSize)
         else:
-            place_ship(fleet2, ship, board2, row, col, direction, uuid.uuid4().int)
+            place_ship(player2_fleet, ship, player2_board, row, col, direction, uuid.uuid4().int)
 
     return redirect("/")
 
@@ -258,17 +258,17 @@ def fire():
         col = random.randint(0, boardSize-1)
     
     # Controlla se la cella è già stata colpita
-    if board1_shoots[row][col] != empty_cell:
+    if player1_board_shoots[row][col] != empty_cell:
         return jsonify({
             "status": "error", 
             "message": "Hai già sparato in questa posizione!"
         })
     
     # Gestisci il colpo del giocatore
-    result = handle_move(row, col, board2, board1_shoots, fleet2)
+    result = handle_move(row, col, player2_board, player1_board_shoots, player2_fleet)
     
     # Se il giocatore ha vinto, termina il turno
-    if fleet2.checkVictory():
+    if player2_fleet.checkVictory():
         return redirect("/")
     
     # Player 2 turn (AI)
@@ -276,7 +276,7 @@ def fire():
     computer_row, computer_col = get_ai_move()
     
     # Gestisci il colpo dell'IA
-    ai_result = handle_move(computer_row, computer_col, board1, board2_shoots, fleet1)
+    ai_result = handle_move(computer_row, computer_col, player1_board, player2_board_shoots, player1_fleet)
     
     # Aggiorna lo stato dell'IA
     ai_player.register_shot_result(computer_row, computer_col, ai_result)
@@ -284,7 +284,7 @@ def fire():
     # Controlla se l'IA ha affondato una nave
     if ai_result == 'A':
         # Aggiorna la conoscenza dell'IA sulle navi rimanenti
-        remaining_ships = fleet1.get_remaining_ship_sizes()
+        remaining_ships = player1_fleet.get_remaining_ship_sizes()
         ai_player.remaining_ships = remaining_ships
     
     return redirect("/")
@@ -310,10 +310,10 @@ def stats():
     stats_data = {
         "player_shots": hit1,
         "ai_shots": hit2,
-        "player_hits": sum(1 for row in board1_shoots for cell in row if cell in ["X", "A"]),
-        "ai_hits": sum(1 for row in board2_shoots for cell in row if cell in ["X", "A"]),
-        "player_ships": fleet1.activeShips,
-        "ai_ships": fleet2.activeShips
+        "player_hits": sum(1 for row in player1_board_shoots for cell in row if cell in ["X", "A"]),
+        "ai_hits": sum(1 for row in player2_board_shoots for cell in row if cell in ["X", "A"]),
+        "player_ships": player1_fleet.activeShips,
+        "ai_ships": player2_fleet.activeShips
     }
     
     return render_template("stats.html", stats=stats_data)

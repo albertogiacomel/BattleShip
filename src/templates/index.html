@@ -38,13 +38,13 @@
             <thead>
               <tr>
                 <th></th>
-                {% for col_index in board1.columns %}
+                {% for col_index in player1_board.columns %}
                 <th>{{ col_index}}</th>
                 {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for row_index, row in board1.iterrows() %}
+              {% for row_index, row in player1_board.iterrows() %}
               <tr>
                 <td>{{ (row_index)|num_to_ascii }}</td>
                 {% for value in row %}
@@ -63,13 +63,13 @@
             <thead>
               <tr>
                 <th></th>
-                {% for col_index in board1.columns %}
+                {% for col_index in player1_board.columns %}
                 <th>{{ col_index}}</th>
                 {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for row_index, row in board1_shoots.iterrows() %}
+              {% for row_index, row in player1_board_shoots.iterrows() %}
               <tr>
                 <td>{{ (row_index)|num_to_ascii }}</td>
                 {% for value in row %}
@@ -89,13 +89,13 @@
             <thead>
               <tr>
                 <th></th>
-                {% for col_index in board2.columns %}
+                {% for col_index in player2_board.columns %}
                 <th>{{ col_index}}</th>
                 {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for row_index, row in board2.iterrows() %}
+              {% for row_index, row in player2_board.iterrows() %}
               <tr>
                 <td>{{ (row_index)|num_to_ascii }}</td>
                 {% for value in row %}
@@ -110,15 +110,15 @@
 
 
     <div class="Fire_container" style="display: none">
-      <br>
-      <a href="/place">Place Ships</a>
+          <br>
+    <a href="/place">Place Ships</a>
       <h2>Insert fire coordinates:</h2>
       <form action="/fire" method="POST">
         <label for="row">Row:&ThickSpace;&ThickSpace;</label>
-        <input type="number" id="row" name="row" min="0" max={{ board2.columns.stop - 1 }} value="0" required>
+        <input type="number" id="row" name="row" min="0" max={{ player2_board.columns.stop - 1 }} value="0" required>
         <br>
         <label for="col">Column:&MediumSpace;</label>
-        <input type="number" id="col" name="col" min="0" max={{ board2.columns.stop - 1 }} value="0" required>
+        <input type="number" id="col" name="col" min="0" max={{ player2_board.columns.stop - 1 }} value="0" required>
         <br><br>
         <button type="submit" id="fire" name="Fire">Fire</button>
         <button type="submit" name="Random">Random</button>
@@ -129,7 +129,7 @@
   {% endif %}
 
   <div class="fleet-details">
-    <div class="fleet1-details">
+    <div class="player1_fleet-details">
       <h3>Fleet Player 1</h3>
       <table>
         <tr>
@@ -137,7 +137,7 @@
           <th>Destroyed Cells</th>
           <th>Is Destroyed</th>
         </tr>
-        {% for ship in fleet1.shipList %}
+        {% for ship in player1_fleet.shipList %}
         <tr>
           <td>{{ ship.activeCells }}</td>
           <td>{{ ship.destroyedCells }}</td>
@@ -146,7 +146,7 @@
         {% endfor %}
       </table>
     </div>
-    <div class="fleet2-details">
+    <div class="player2_fleet-details">
       <h3>Fleet Player 2</h3>
       <table>
         <tr>
@@ -154,7 +154,7 @@
           <th>Destroyed Cells</th>
           <th>Is Destroyed</th>
         </tr>
-        {% for ship in fleet2.shipList %}
+        {% for ship in player2_fleet.shipList %}
         <tr>
           <td>{{ ship.activeCells }}</td>
           <td>{{ ship.destroyedCells }}</td>

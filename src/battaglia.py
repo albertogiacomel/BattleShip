@@ -34,6 +34,7 @@ class Fleet():
         self.ships = ships.copy()
         self.activeShips = len(self.ships)
         self.shipList = []
+        self.destroyedShips = []  # Nuovo elenco per tenere traccia delle navi affondate
 
     def checkVictory(self):
         if self.activeShips == 0:
@@ -42,6 +43,7 @@ class Fleet():
     
     def restart(self):
         self.shipList.clear()
+        self.destroyedShips.clear()  # Puliamo anche le navi affondate
         self.activeShips = len(self.ships)
 
     def get_remaining_ship_sizes(self):
@@ -127,10 +129,14 @@ def create_table(board):
 
 def checkSink(fleet, row, col):
     """Controlla se una nave è stata affondata e aggiorna lo stato della flotta"""
-    for ship in fleet.shipList:
+    for i, ship in enumerate(fleet.shipList[:]):  # Crea una copia della lista per iterare in sicurezza
         if ship.calc_hit(row, col):
+            # La nave è stata colpita
             fleet.activeShips -= 1
-            fleet.shipList.remove(ship)
+            # La rimuoviamo dalla lista di navi attive
+            sunk_ship = fleet.shipList.pop(i)
+            # La aggiungiamo alla lista di navi affondate
+            fleet.destroyedShips.append(sunk_ship)
             return True, ship.activeCells
     return False, 0
 
@@ -140,13 +146,13 @@ def handle_move(row, col, opponent_board, board_shoots, fleet):
     if opponent_board[row][col].startswith("S"):
         sunk, ship_size = checkSink(fleet, row, col)
         if sunk:
-            board_shoots[row][col] = "A"
+            board_shoots[row][col] = "A"  # "A" for "Affondata" (Sunk)
             result = "A"  # Affondata
         else:
-            board_shoots[row][col] = "X"
+            board_shoots[row][col] = "X"  # "X" for hit
             result = "X"  # Colpita
     else:
-        board_shoots[row][col] = "O"
+        board_shoots[row][col] = "O"  # "O" for miss
         result = "O"  # Mancata
     
     return result
@@ -311,6 +317,21 @@ def stats():
     }
     
     return render_template("stats.html", stats=stats_data)
+
+@app.context_processor
+def utility_processor():
+    """Processore per il rendering delle celle"""
+    def render_cell_content(value):
+        if value == ".":
+            return '<img src="static/images/fog.png" alt="Fog" width="100%" height="100%"/>'
+        elif value == "O":
+            return '<img src="static/images/water.png" alt="Water" width="100%" height="100%"/>'
+        elif value == "A" or value == "X":
+            return '<img src="static/images/fire.png" alt="Fire" width="100%" height="100%"/>'
+        elif value.startswith("S"):
+            # If it's a ship cell (starting with 'S'), show the ship part number
+            return value
+    return dict(render_cell_content=render_cell_content)
 
 if __name__ == "__main__":
     # Inizializza il gioco

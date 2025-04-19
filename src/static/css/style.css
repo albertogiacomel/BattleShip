@@ -1,31 +1,3 @@
-/* Set the overall font family */
-body {
-  font-family: monospace;
-}
-
-/* Style headings */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-/* Style paragraphs */
-p {
-  font-size: 16px;
-  line-height: 1.5;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-
-
-/* Set the font size for links */
-a {
-  color: #007bff;
-  text-decoration: none;
-}
 
 /* Style and position buttons */
 .btn {
@@ -51,30 +23,21 @@ elememt.style {
 }
 
 .fleet-details {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    position: fixed;
-    left: 10%;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  max-width: 800px;
+  margin-left: 20px;
 }
 
-.fleet1-details, .fleet2-details {
-    margin-bottom: 20px;
-}
-
-
-.fleet-details table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.fleet-details th, .fleet-details td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    background-color: #f2f2f2;
+.fleet-details h4 {
+  font-size: 14px;
+  margin: 15px 0 5px 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
 }
 
 
@@ -152,4 +115,109 @@ a {
 
 .element {
   font-family: monospace;
+}
+
+/* Additional styles for error messages */
+#message-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  max-width: 80%;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Make the cell clickable */
+#dataframe_shoots td {
+  cursor: pointer;
+}
+
+#dataframe_shoots td:hover {
+  background-color: #e0e0e0;
+}
+
+/* Fleet details styling */
+.destroyed-ship {
+  color: #888;
+  text-decoration: line-through;
+}
+
+
+.destroyed-ship {
+  color: #888;
+}
+
+.ship-sunk {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+.ship-cell {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 0 2px;
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+}
+
+.ship-cell.hit {
+  background-color: #dc3545;
+  border: 1px solid #a71d2a;
+}
+
+.ship-visual {
+  display: flex;
+  align-items: center;
+}
+
+.fleet-summary {
+  margin-bottom: 10px;
+  font-weight: bold;
+  background-color: #e9ecef;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.no-ships {
+  font-style: italic;
+  color: #666;
+}
+
+.fleet-details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.fleet-details th, .fleet-details td {
+  padding: 6px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.fleet-details th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.fleet-details tr:hover {
+  background-color: #f5f5f5;
 }

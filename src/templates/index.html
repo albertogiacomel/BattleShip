@@ -83,12 +83,12 @@
         </div>
       </div>
       <div class="Player2" style="display: none">
-        <h2>Player 2</h2>
+        <h2>Player 2 (Computer)</h2>
         <div id="data-container2">
           <table id="dataframe2">
             <thead>
               <tr>
-                <th />
+                <th></th>
                 {% for col_index in board2.columns %}
                 <th>{{ col_index}}</th>
                 {% endfor %}
@@ -99,7 +99,7 @@
               <tr>
                 <td>{{ (row_index)|num_to_ascii }}</td>
                 {% for value in row %}
-                <td>{{ value }}</td>
+                <td>{{ render_cell_content(value) | safe }}</td>
                 {% endfor %}
               </tr>
               {% endfor %}
@@ -109,8 +109,10 @@
       </div>
 
 
-    <div class="Fire_container"  style="display: none">
-      <h2> Insert fire coordonates:</h2>
+    <div class="Fire_container" style="display: none">
+      <br>
+      <a href="/place">Place Ships</a>
+      <h2>Insert fire coordinates:</h2>
       <form action="/fire" method="POST">
         <label for="row">Row:&ThickSpace;&ThickSpace;</label>
         <input type="number" id="row" name="row" min="0" max={{ board2.columns.stop - 1 }} value="0" required>
@@ -120,9 +122,9 @@
         <br><br>
         <button type="submit" id="fire" name="Fire">Fire</button>
         <button type="submit" name="Random">Random</button>
+      </form>
     </div>
-    <br>
-    <a href="/place" style="display: none">Place Ships</a>
+
   </div>
   {% endif %}
 
